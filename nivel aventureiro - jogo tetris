@@ -1,0 +1,158 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define TAM_FILA 5
+#define TAM_PILHA 3
+
+// Estrutura da peça
+typedef struct {
+    char nome;
+    int id;
+} Peca;
+
+// ===== FILA =====
+Peca fila[TAM_FILA];
+int inicio = 0;
+int fim = 0;
+int qtdFila = 0;
+
+// ===== PILHA =====
+Peca pilha[TAM_PILHA];
+int topo = -1;
+
+int proximoId = 1;
+
+// Gera peça automaticamente
+Peca gerarPeca() {
+    char tipos[] = {'I', 'O', 'T', 'L'};
+    Peca p;
+    p.nome = tipos[rand() % 4];
+    p.id = proximoId++;
+    return p;
+}
+
+// Enfileirar automaticamente
+void enfileirar() {
+    fila[fim] = gerarPeca();
+    fim = (fim + 1) % TAM_FILA;
+    qtdFila++;
+}
+
+// Jogar peça da fila
+void jogarPeca() {
+    Peca jogada = fila[inicio];
+    inicio = (inicio + 1) % TAM_FILA;
+    qtdFila--;
+
+    printf("\n🎮 Peça jogada: [%c | ID %d]\n", jogada.nome, jogada.id);
+
+    enfileirar(); // mantém fila cheia
+}
+
+// Reservar peça (push)
+void reservarPeca() {
+    if (topo == TAM_PILHA - 1) {
+        printf("\n⚠️ Pilha de reserva cheia!\n");
+        return;
+    }
+
+    Peca reservada = fila[inicio];
+    inicio = (inicio + 1) % TAM_FILA;
+    qtdFila--;
+
+    topo++;
+    pilha[topo] = reservada;
+
+    printf("\n📥 Peça reservada: [%c | ID %d]\n", reservada.nome, reservada.id);
+
+    enfileirar();
+}
+
+// Usar peça reservada (pop)
+void usarReservada() {
+    if (topo == -1) {
+        printf("\n⚠️ Pilha de reserva vazia!\n");
+        return;
+    }
+
+    Peca usada = pilha[topo];
+    topo--;
+
+    printf("\n📤 Peça usada da reserva: [%c | ID %d]\n", usada.nome, usada.id);
+}
+
+// Mostrar fila
+void mostrarFila() {
+    int i, pos;
+
+    printf("\n📦 FILA:\n");
+    for (i = 0; i < TAM_FILA; i++) {
+        pos = (inicio + i) % TAM_FILA;
+        printf(" [%c | ID %d] ", fila[pos].nome, fila[pos].id);
+    }
+    printf("\n");
+}
+
+// Mostrar pilha
+void mostrarPilha() {
+    int i;
+
+    printf("\n📚 PILHA (Reserva):\n");
+    if (topo == -1) {
+        printf(" [vazia]\n");
+        return;
+    }
+
+    for (i = topo; i >= 0; i--) {
+        printf(" [%c | ID %d]\n", pilha[i].nome, pilha[i].id);
+    }
+}
+
+// Menu
+void menu() {
+    printf("\n====== TETRIS STACK - NÍVEL AVENTUREIRO ======\n");
+    printf("1 - Jogar peça\n");
+    printf("2 - Reservar peça\n");
+    printf("3 - Usar peça reservada\n");
+    printf("0 - Sair\n");
+    printf("Escolha: ");
+}
+
+int main() {
+    int opcao;
+    srand(time(NULL));
+
+    // Inicializa fila cheia
+    for (int i = 0; i < TAM_FILA; i++) {
+        enfileirar();
+    }
+
+    do {
+        menu();
+        scanf("%d", &opcao);
+
+        switch (opcao) {
+            case 1:
+                jogarPeca();
+                break;
+            case 2:
+                reservarPeca();
+                break;
+            case 3:
+                usarReservada();
+                break;
+            case 0:
+                printf("\n👋 Encerrando o jogo...\n");
+                break;
+            default:
+                printf("\n❌ Opção inválida!\n");
+        }
+
+        mostrarFila();
+        mostrarPilha();
+
+    } while (opcao != 0);
+
+    return 0;
+}

@@ -1,0 +1,48 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define TAM 5
+
+// Estrutura da peça
+typedef struct {
+    char nome;
+    int id;
+} Peca;
+
+// Variáveis da fila
+Peca fila[TAM];
+int inicio = 0;
+int fim = 0;
+int quantidade = 0;
+int proximoId = 1;
+
+// Função para gerar peça automaticamente
+Peca gerarPeca() {
+    char tipos[] = {'I', 'O', 'T', 'L'};
+    Peca p;
+
+    p.nome = tipos[rand() % 4];
+    p.id = proximoId++;
+
+    return p;
+}
+
+// Inserir peça na fila (enqueue)
+void enfileirar() {
+    if (quantidade == TAM) {
+        printf("\n⚠️ A fila está cheia!\n");
+        return;
+    }
+
+    fila[fim] = gerarPeca();
+    fim = (fim + 1) % TAM;
+    quantidade++;
+
+    printf("\n✅ Nova peça inserida com sucesso!\n");
+}
+
+// Remover peça da fila (dequeue)
+void jogarPeca() {
+    if (quantidade == 0) {
+        print
